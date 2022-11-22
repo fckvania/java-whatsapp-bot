@@ -24,7 +24,6 @@ public class Message {
         try {
             Simple simple = new Simple(api, msg);
             String body;
-            String prefix = "!";
 
             if ((msg.message().content() instanceof TextMessage textMessage)) {
                 body = textMessage.text();

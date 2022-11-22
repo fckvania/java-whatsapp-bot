@@ -10,16 +10,14 @@ import it.auties.whatsapp.model.message.standard.ContactMessage;
 import it.auties.whatsapp.model.message.standard.DocumentMessage;
 import it.auties.whatsapp.model.message.standard.ImageMessage;
 import it.auties.whatsapp.model.message.standard.VideoMessage;
-import mybot.maple.message.Message;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
 public class Simple {
-    private Whatsapp client;
-    private MessageInfo m;
+    final Whatsapp client;
+    final MessageInfo m;
     public Simple(Whatsapp api, MessageInfo info) {
         this.client = api;
         this.m = info;
@@ -96,7 +94,6 @@ public class Simple {
                 .media(media)
                 .title(title)
                 .fileName(fileName)
-                .pageCount(1)
                 .build();
         this.client.sendMessage(this.m.chatJid(), doc, this.m);
     }
