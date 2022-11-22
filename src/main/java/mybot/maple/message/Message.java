@@ -48,7 +48,7 @@ public class Message {
 
             switch (command) {
                 /**
-                 * Main Command
+                 * Main Menu
                  */
                 case "!menu":
                     String menu = """
@@ -83,7 +83,7 @@ public class Message {
                     simple.Reply(about);
                     break;
                 /**,
-                 * Downloader Case
+                 * Downloader Menu
                   */
                 case "!play": {
                     if (text.equals("")) {
@@ -117,7 +117,7 @@ public class Message {
                     break;
                 }
                 /**
-                 * Group Case
+                 * Group Menu
                  */
                 case "!link": {
                     if(!isGroup) {
@@ -133,7 +133,7 @@ public class Message {
                     break;
                 }
                 /**
-                 * Owner Case
+                 * Owner Menu
                  */
                 case "$":
                     if (!isOwner) return;
