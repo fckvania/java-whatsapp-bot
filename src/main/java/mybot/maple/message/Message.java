@@ -11,11 +11,22 @@ import it.auties.whatsapp.model.message.standard.ImageMessage;
 import it.auties.whatsapp.model.message.standard.TextMessage;
 import mybot.maple.lib.Functions;
 import mybot.maple.lib.Simple;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -52,8 +63,12 @@ public class Message {
                 case "!menu":
                     String menu = """
                             *Main Menu*
+                            > !join
                             > !menu
                             > !owner
+                            
+                            *Convert Menu*
+                            > !sticker
 
                             *Downloader Menu*
                             > !play
@@ -81,6 +96,20 @@ public class Message {
                             """;
                     simple.Reply(about);
                     break;
+                case "!join": {
+                    if (text.equals("")) {
+                        simple.Reply("Query not supported");
+                        return;
+                    }
+
+                    var resp = api.acceptGroupInvite(text.replace("https://chat.whatsapp.com/", ""));
+                    if(resp.join().isEmpty()) {
+                        simple.Reply("Failed To Join Group");
+                        return;
+                    }
+                    simple.Reply("Succes Join Group");
+                    break;
+                }
                 /**,
                  * Downloader Menu
                   */
@@ -90,7 +119,7 @@ public class Message {
                         return;
                     }
                     simple.Reply("Mohon Di Tunggu.");
-                    String resp = new Functions().Fetch("http://20.168.230.160:5555/youtube/download/%s?type=mp3".formatted(text.replace(" ", "+")));
+                    String resp = new Functions().Fetch("http://localhost:5555/youtube/download/%s?type=mp3".formatted(text.replace(" ", "+")));
                     JsonObject json = new Gson().fromJson(resp, JsonObject.class);
                     String title = json.get("title").getAsString();
                     String duration = json.get("timestamp").getAsString();
@@ -109,7 +138,7 @@ public class Message {
                         return;
                     }
                     simple.Reply("Mohon Di Tunggu.");
-                    String resp = new Functions().Fetch("http://20.168.230.160:5555/tiktok/download?url=%s".formatted(text));
+                    String resp = new Functions().Fetch("http://localhost:5555/tiktok/download?url=%s".formatted(text));
                     JsonObject json = new Gson().fromJson(resp, JsonObject.class);
                     String capt = json.get("caption").getAsString();
                     simple.SendVideo(json.get("mp4").getAsString(), capt);
@@ -132,12 +161,42 @@ public class Message {
                     break;
                 }
                 /**
+                 * Convert Menu
+                 */
+                case "!sticker":
+                    var dok = api.downloadMedia(msg).join();
+                    byte[] bass64 = Base64.getEncoder().encode(dok);
+
+                    JSONObject json = new JSONObject();
+
+                    HttpClient httpClient = HttpClientBuilder.create().build();
+                    var ok = new String(bass64);
+
+                    json.put("image", ok);
+                    StringEntity se = new StringEntity(json.toString());
+                    se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+                    HttpPost request = new HttpPost("http://localhost:5555/sticker/create");
+                    request.setEntity(se);
+
+                    HttpResponse response = httpClient.execute(request);
+                    String result = "";
+                    if(response!=null){
+                        InputStream in = response.getEntity().getContent();
+                        result = new Functions().convertStreamToString(in);
+                        in.close();
+                    }
+
+                    var res = new Gson().fromJson(result, JsonObject.class);
+                    byte[] dec = Base64.getDecoder().decode(new String(res.get("webpBase64").getAsString()).getBytes());
+                    simple.SendSticker(dec);
+                    break;
+                /**
                  * Owner Menu
                  */
                 case "$":
                     if (!isOwner) return;
                     ProcessBuilder processBuilder = new ProcessBuilder();
-                    processBuilder.command("bash", "-c", text);
+                    processBuilder.command("cmd.exe", "/c", text);
                     Process process = processBuilder.start();
                     StringBuilder output = new StringBuilder();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));

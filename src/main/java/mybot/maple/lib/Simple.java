@@ -6,10 +6,7 @@ import it.auties.whatsapp.model.contact.ContactCard;
 import it.auties.whatsapp.model.contact.ContactJid;
 import it.auties.whatsapp.model.info.MessageInfo;
 import it.auties.whatsapp.model.message.button.ButtonsMessage;
-import it.auties.whatsapp.model.message.standard.ContactMessage;
-import it.auties.whatsapp.model.message.standard.DocumentMessage;
-import it.auties.whatsapp.model.message.standard.ImageMessage;
-import it.auties.whatsapp.model.message.standard.VideoMessage;
+import it.auties.whatsapp.model.message.standard.*;
 
 import java.io.IOException;
 import java.net.URL;
@@ -78,6 +75,19 @@ public class Simple {
                 .caption(caption)
                 .build();
         this.client.sendMessage(this.m.chatJid(), vid, this.m);
+    }
+
+    /**
+     *
+     * @param buffer
+     */
+    public void SendSticker(byte[] buffer) {
+        var stc = StickerMessage.newStickerMessageBuilder()
+                .mediaConnection(this.client.store().mediaConnection())
+                .media(buffer)
+                .animated(false)
+                .build();
+        this.client.sendMessage(this.m.chatJid(), stc, this.m);
     }
 
     /**
