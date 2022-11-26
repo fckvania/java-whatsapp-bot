@@ -3,6 +3,7 @@ package mybot.maple.message;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import it.auties.whatsapp.api.Whatsapp;
+import it.auties.whatsapp.controller.Store;
 import it.auties.whatsapp.model.button.Button;
 import it.auties.whatsapp.model.contact.ContactJid;
 import it.auties.whatsapp.model.info.MessageInfo;
@@ -14,7 +15,6 @@ import mybot.maple.lib.Simple;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
@@ -47,6 +47,8 @@ public class Message {
             }
 
             ContactJid from = msg.chatJid();
+            ContactJid sender = msg.senderJid();
+            Store store = api.store();
             String ownerNumber = "6281236031617@s.whatsapp.net";
 
             String[] args = body.split(" ");
@@ -55,6 +57,8 @@ public class Message {
 
             Boolean isOwner = ownerNumber.equals(msg.sender().get().jid().toString());
             Boolean isGroup = msg.chatJid().hasServer(ContactJid.Server.GROUP);
+            Boolean isAdmin = simple.CheckGroupAdmin(from, sender);
+            Boolean isMeAdmin = simple.CheckGroupAdmin(from, store.userCompanionJid().toUserJid());
 
             switch (command) {
                 /**
@@ -67,7 +71,7 @@ public class Message {
                             > !menu
                             > !owner
                             
-                            *Convert Menu*
+                            *Converter Menu*
                             > !sticker
 
                             *Downloader Menu*
@@ -152,6 +156,10 @@ public class Message {
                         simple.Reply("Command Tidak Support Di Luar Group!.");
                         return;
                     }
+                    if (!isMeAdmin) {
+                        simple.Reply("Nalle Not Admin :(");
+                        return;
+                    }
                     String subject = msg.chat().name();
                     String anu = api.queryGroupInviteCode(from)
                             .join();
@@ -164,8 +172,22 @@ public class Message {
                  * Convert Menu
                  */
                 case "!sticker":
-                    var dok = api.downloadMedia(msg).join();
-                    byte[] bass64 = Base64.getEncoder().encode(dok);
+                case "!s":
+                    if (msg.quotedMessage().isEmpty() && !(msg.message().content() instanceof ImageMessage)) {
+                        simple.Reply("Media Not Found");
+                        return;
+                    }
+                    byte[] media;
+                    if (msg.message().content() instanceof ImageMessage) {
+                        media = api.downloadMedia(msg).join();
+                    } else if (msg.quotedMessage().get().message().content() instanceof  ImageMessage){
+                        var getMsg = store.findMessageById(msg.chat(), msg.quotedMessage().get().id()).get();
+                        media = api.downloadMedia(getMsg).join();
+                    } else {
+                        simple.Reply("Media Not Found");
+                        return;
+                    }
+                    byte[] bass64 = Base64.getEncoder().encode(media);
 
                     JSONObject json = new JSONObject();
 
@@ -217,7 +239,7 @@ public class Message {
                     break;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            api.sendMessage(ContactJid.of("6281236031617@s.whatsapp.net").toJid(), e.toString());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

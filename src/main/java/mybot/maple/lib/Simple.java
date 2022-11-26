@@ -141,4 +141,25 @@ public class Simple {
                 .build();
         this.client.sendMessage(this.m.chatJid(), btn, this.m);
     }
+
+    /**
+     *
+     * @param jid
+     * @param sender
+     * @return
+     */
+    public boolean CheckGroupAdmin(ContactJid jid, ContactJid sender) {
+        if (!this.m.chatJid().hasServer(ContactJid.Server.GROUP)) {
+            return false;
+        }
+        var meta = this.client.queryGroupMetadata(jid).join().participants();
+        for (var admin: meta) {
+            if (admin.role().name() == "ADMIN" || admin.role().name() == "FOUNDER") {
+                if (admin.jid().toString().equals(sender.toString())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
