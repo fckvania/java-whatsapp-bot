@@ -12,7 +12,6 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Maple {
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         var waOpts = Whatsapp.Options.builder()
-                .textPreviewSetting(TextPreviewSetting.DISABLED)
                 .defaultSerialization(true)
                 .description("Maple")
                 .qrHandler(QrHandler.toTerminal())

@@ -91,6 +91,7 @@ public class Message {
 
                             • Version : %s
                             • JVM version : %s
+                            • Library : WhatsappWeb4j
                             • Thanks to : github.com/Auties00                                                                
                             """.formatted(versi, System.getProperty("java.version"));
                     Button btn = Button.of("!source", "Source");
