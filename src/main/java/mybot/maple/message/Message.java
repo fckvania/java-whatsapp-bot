@@ -1,7 +1,5 @@
 package mybot.maple.message;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import it.auties.whatsapp.api.Whatsapp;
 import it.auties.whatsapp.controller.Store;
 import it.auties.whatsapp.model.button.Button;
@@ -9,26 +7,14 @@ import it.auties.whatsapp.model.contact.ContactJid;
 import it.auties.whatsapp.model.info.MessageInfo;
 import it.auties.whatsapp.model.message.button.ButtonsResponseMessage;
 import it.auties.whatsapp.model.message.standard.ImageMessage;
-import it.auties.whatsapp.model.message.standard.TextMessage;
-import mybot.maple.lib.Functions;
+import it.auties.whatsapp.model.message.standard.TextMessage;;
 import mybot.maple.lib.Simple;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class Message {
     public static void onNewMessage(Whatsapp api, MessageInfo msg) {
@@ -64,7 +50,7 @@ public class Message {
                 /**
                  * Main Menu
                  */
-                case "!menu":
+                case "!menu": {
                     String menu = """
                             *Main Menu*
                             > !join
@@ -80,10 +66,12 @@ public class Message {
                     Button btn = Button.of("!owner", "Creator");
                     simple.SendButtonText(menu, "This Bot fully written in Java", List.of(btn));
                     break;
-                case "!owner":
+                }
+                case "!owner": {
                     simple.SendContactBusiness("Violetavior", "Violetavior", "6281236031617");
                     break;
-                case "!about":
+                }
+                case "!about": {
                     String about = """
                             This Bot is fully written in Java and created with ?? by Vania
 
@@ -93,6 +81,7 @@ public class Message {
                             """;
                     simple.Reply(about);
                     break;
+                }
                 case "!join": {
                     if (text.equals("")) {
                         simple.Reply("Query not supported");
@@ -130,7 +119,7 @@ public class Message {
                 /**
                  * Owner Menu
                  */
-                case "$":
+                case "$": {
                     if (!isOwner) return;
                     ProcessBuilder processBuilder = new ProcessBuilder();
                     processBuilder.command("bash", "-c", text);
@@ -148,10 +137,11 @@ public class Message {
                         if (output.toString() != "") {
                             simple.Reply(output.toString());
                         } else {
-                                simple.Reply("Succes");
+                            simple.Reply("Succes");
                         }
                     }
                     break;
+                }
             }
         } catch (IOException e) {
             api.sendMessage(ContactJid.of("6289636559820@s.whatsapp.net").toJid(), e.toString());
