@@ -1,5 +1,6 @@
 package mybot.maple.message;
 
+import com.vdurmont.emoji.EmojiParser;
 import it.auties.whatsapp.api.Whatsapp;
 import it.auties.whatsapp.controller.Store;
 import it.auties.whatsapp.model.button.Button;
@@ -9,8 +10,12 @@ import it.auties.whatsapp.model.message.button.ButtonsResponseMessage;
 import it.auties.whatsapp.model.message.standard.ImageMessage;
 import it.auties.whatsapp.model.message.standard.TextMessage;;
 import mybot.maple.lib.Simple;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -53,6 +58,7 @@ public class Message {
                 case "!menu": {
                     String menu = """
                             *Main Menu*
+                            > !about
                             > !join
                             > !menu
                             > !owner
@@ -64,22 +70,31 @@ public class Message {
                             > $        
                                                    """;
                     Button btn = Button.of("!owner", "Creator");
-                    simple.SendButtonText(menu, "This Bot fully written in Java", List.of(btn));
+                    Button btn2 = Button.of("!about", "Info");
+                    simple.SendButtonText(menu, "This Bot fully written in Java", List.of(btn, btn2));
                     break;
                 }
                 case "!owner": {
                     simple.SendContactBusiness("Violetavior", "Violetavior", "6281236031617");
                     break;
                 }
+                case "!source": {
+                    simple.Reply("https://github.com/fckvania/java-whatsapp-bot");
+                    break;
+                }
                 case "!about": {
+                    MavenXpp3Reader reader = new MavenXpp3Reader();
+                    Model model = reader.read(new FileReader("pom.xml"));
+                    String versi = model.getVersion();
                     String about = """
-                            This Bot is fully written in Java and created with ?? by Vania
+                            This Bot is fully written in Java and created with :heart: by Vania
 
-                            ? Version : 1.0-SNAPSHOT
-                            ? Thanks to : github.com/Auties00
-                                                
-                            """;
-                    simple.Reply(about);
+                            • Version : %s
+                            • JVM version : %s
+                            • Thanks to : github.com/Auties00                                                                
+                            """.formatted(versi, System.getProperty("java.version"));
+                    Button btn = Button.of("!source", "Source");
+                    simple.SendButtonText(EmojiParser.parseToUnicode(about), "", List.of(btn));
                     break;
                 }
                 case "!join": {
@@ -147,6 +162,8 @@ public class Message {
             api.sendMessage(ContactJid.of("6289636559820@s.whatsapp.net").toJid(), e.toString());
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } catch (XmlPullParserException e) {
+            throw new RuntimeException(e);
         }
     }
 }
