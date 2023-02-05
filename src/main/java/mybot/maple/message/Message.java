@@ -49,7 +49,7 @@ public class Message {
             ContactJid from = msg.chatJid();
             ContactJid sender = msg.senderJid();
             Store store = api.store();
-            String ownerNumber = "6281236031617@s.whatsapp.net";
+            String ownerNumber = "6289636559820@s.whatsapp.net";
 
             String[] args = body.split(" ");
             String command = args[0].toLowerCase();
@@ -70,13 +70,6 @@ public class Message {
                             > !join
                             > !menu
                             > !owner
-                            
-                            *Converter Menu*
-                            > !sticker
-
-                            *Downloader Menu*
-                            > !play
-                            > !tiktok
 
                             *Group Menu*
                             > !link
@@ -114,40 +107,6 @@ public class Message {
                     simple.Reply("Succes Join Group");
                     break;
                 }
-                /**,
-                 * Downloader Menu
-                  */
-                case "!play": {
-                    if (text.equals("")) {
-                        simple.Reply("Apa Yang Mau di Cari?.");
-                        return;
-                    }
-                    simple.Reply("Mohon Di Tunggu.");
-                    String resp = new Functions().Fetch("http://localhost:5555/youtube/download/%s?type=mp3".formatted(text.replace(" ", "+")));
-                    JsonObject json = new Gson().fromJson(resp, JsonObject.class);
-                    String title = json.get("title").getAsString();
-                    String duration = json.get("timestamp").getAsString();
-                    String capt = "*Youtube Downloader*\n\n*Title :* %s\n*Duration :* %s\n\n*Audio Sedang Dikirim*"
-                            .formatted(title, duration);
-                    simple.SendImage(json.get("thumbnail").getAsString(), capt);
-                    simple.SendDocument(json.get("results").getAsString(), "%s.mp3".formatted(title), title);
-                    break;
-                }
-                case "!tiktok": {
-                    if (text.equals("")) {
-                        simple.Reply("Apa Yang Mau di Cari?.");
-                        return;
-                    } else if(!Pattern.compile("tiktok", Pattern.CASE_INSENSITIVE).matcher(text).find()) {
-                        simple.Reply("Silahkan Masukan Link Tiktok.");
-                        return;
-                    }
-                    simple.Reply("Mohon Di Tunggu.");
-                    String resp = new Functions().Fetch("http://localhost:5555/tiktok/download?url=%s".formatted(text));
-                    JsonObject json = new Gson().fromJson(resp, JsonObject.class);
-                    String capt = json.get("caption").getAsString();
-                    simple.SendVideo(json.get("mp4").getAsString(), capt);
-                    break;
-                }
                 /**
                  * Group Menu
                  */
@@ -169,56 +128,12 @@ public class Message {
                     break;
                 }
                 /**
-                 * Convert Menu
-                 */
-                case "!sticker":
-                case "!s":
-                    if (msg.quotedMessage().isEmpty() && !(msg.message().content() instanceof ImageMessage)) {
-                        simple.Reply("Media Not Found");
-                        return;
-                    }
-                    byte[] media;
-                    if (msg.message().content() instanceof ImageMessage) {
-                        media = api.downloadMedia(msg).join();
-                    } else if (msg.quotedMessage().get().message().content() instanceof  ImageMessage){
-                        var getMsg = store.findMessageById(msg.chat(), msg.quotedMessage().get().id()).get();
-                        media = api.downloadMedia(getMsg).join();
-                    } else {
-                        simple.Reply("Media Not Found");
-                        return;
-                    }
-                    byte[] bass64 = Base64.getEncoder().encode(media);
-
-                    JSONObject json = new JSONObject();
-
-                    HttpClient httpClient = HttpClientBuilder.create().build();
-                    var ok = new String(bass64);
-
-                    json.put("image", ok);
-                    StringEntity se = new StringEntity(json.toString());
-                    se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-                    HttpPost request = new HttpPost("http://localhost:5555/sticker/create");
-                    request.setEntity(se);
-
-                    HttpResponse response = httpClient.execute(request);
-                    String result = "";
-                    if(response!=null){
-                        InputStream in = response.getEntity().getContent();
-                        result = new Functions().convertStreamToString(in);
-                        in.close();
-                    }
-
-                    var res = new Gson().fromJson(result, JsonObject.class);
-                    byte[] dec = Base64.getDecoder().decode(new String(res.get("webpBase64").getAsString()).getBytes());
-                    simple.SendSticker(dec);
-                    break;
-                /**
                  * Owner Menu
                  */
                 case "$":
                     if (!isOwner) return;
                     ProcessBuilder processBuilder = new ProcessBuilder();
-                    processBuilder.command("cmd.exe", "/c", text);
+                    processBuilder.command("bash", "-c", text);
                     Process process = processBuilder.start();
                     StringBuilder output = new StringBuilder();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -239,7 +154,7 @@ public class Message {
                     break;
             }
         } catch (IOException e) {
-            api.sendMessage(ContactJid.of("6281236031617@s.whatsapp.net").toJid(), e.toString());
+            api.sendMessage(ContactJid.of("6289636559820@s.whatsapp.net").toJid(), e.toString());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
