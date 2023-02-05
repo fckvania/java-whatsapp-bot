@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Maple {
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        var waOpts = Whatsapp.Options.newOptions()
+        var waOpts = Whatsapp.Options.builder()
                 .id(ThreadLocalRandom.current().nextInt())
                 .version(new Version(2,2212,7))
                 .textPreviewSetting(TextPreviewSetting.DISABLED)

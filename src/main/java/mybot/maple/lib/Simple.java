@@ -34,11 +34,11 @@ public class Simple {
      * @param number
      */
     public void SendContact(String name, String number) {
-        var vcard = ContactCard.newContactCardBuilder()
+        var vcard = ContactCard.builder()
                 .name(name)
                 .phoneNumber(ContactJid.of(number))
                 .build();
-        var contactMessage = ContactMessage.newContactMessageBuilder()
+        var contactMessage = ContactMessage.builder()
                 .name(name)
                 .vcard(vcard)
                 .build();
@@ -53,8 +53,7 @@ public class Simple {
      */
     public void SendImage(String url, String caption) throws IOException {
         var media = new URL(url).openStream().readAllBytes();
-        var img = ImageMessage.newImageMessageBuilder()
-                .mediaConnection(this.client.store().mediaConnection())
+        var img = ImageMessage.simpleBuilder()
                 .media(media)
                 .caption(caption)
                 .build();
@@ -69,8 +68,7 @@ public class Simple {
      */
     public void SendVideo(String url, String caption) throws IOException {
         var media = new URL(url).openStream().readAllBytes();
-        var vid = VideoMessage.newVideoMessageBuilder()
-                .mediaConnection(this.client.store().mediaConnection())
+        var vid = VideoMessage.simpleVideoBuilder()
                 .media(media)
                 .caption(caption)
                 .build();
@@ -82,8 +80,7 @@ public class Simple {
      * @param buffer
      */
     public void SendSticker(byte[] buffer) {
-        var stc = StickerMessage.newStickerMessageBuilder()
-                .mediaConnection(this.client.store().mediaConnection())
+        var stc = StickerMessage.simpleBuilder()
                 .media(buffer)
                 .animated(false)
                 .build();
@@ -99,8 +96,7 @@ public class Simple {
      */
     public void SendDocument(String url, String fileName, String title) throws IOException {
         var media = new URL(url).openStream().readAllBytes();
-        var doc = DocumentMessage.newDocumentMessageBuilder()
-                .mediaConnection(this.client.store().mediaConnection())
+        var doc = DocumentMessage.simpleBuilder()
                 .media(media)
                 .title(title)
                 .fileName(fileName)
@@ -115,12 +111,12 @@ public class Simple {
      * @param number
      */
     public void SendContactBusiness(String name, String businessName, String number) {
-        var vcard = ContactCard.newContactCardBuilder()
+        var vcard = ContactCard.builder()
                 .name(name)
                 .businessName(businessName)
                 .phoneNumber(ContactJid.of(number))
                 .build();
-        var contactMessage = ContactMessage.newContactMessageBuilder()
+        var contactMessage = ContactMessage.builder()
                 .name(name)
                 .vcard(vcard)
                 .build();
@@ -134,7 +130,7 @@ public class Simple {
      * @param buttons
      */
     public void SendButtonText(String body, String footer, List<Button> buttons) {
-        var btn = ButtonsMessage.newButtonsWithoutHeaderMessageBuilder()
+        var btn = ButtonsMessage.withoutHeaderBuilder()
                 .body(body)
                 .footer(footer)
                 .buttons(buttons)

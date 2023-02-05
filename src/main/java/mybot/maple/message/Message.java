@@ -84,7 +84,7 @@ public class Message {
                             *Owner Menu*
                             > $        
                                                    """;
-                    Button btn = Button.newResponseButton("!owner", "Creator");
+                    Button btn = Button.of("!owner", "Creator");
                     simple.SendButtonText(menu, "This Bot fully written in Java", List.of(btn));
                     break;
                 case "!owner":
