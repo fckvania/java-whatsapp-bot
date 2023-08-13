@@ -1,16 +1,13 @@
 package mybot.maple.lib;
 
 import it.auties.whatsapp.api.Whatsapp;
-import it.auties.whatsapp.model.button.Button;
 import it.auties.whatsapp.model.contact.ContactCard;
 import it.auties.whatsapp.model.contact.ContactJid;
 import it.auties.whatsapp.model.info.MessageInfo;
-import it.auties.whatsapp.model.message.button.ButtonsMessage;
 import it.auties.whatsapp.model.message.standard.*;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 
 public class Simple {
     final Whatsapp client;
@@ -20,19 +17,10 @@ public class Simple {
         this.m = info;
     }
 
-    /**
-     *
-     * @param text
-     */
     public void Reply(String text) {
         this.client.sendMessage(this.m.chatJid(), text, this.m);
     }
 
-    /**
-     *
-     * @param name
-     * @param number
-     */
     public void SendContact(String name, String number) {
         var vcard = ContactCard.builder()
                 .name(name)
@@ -45,12 +33,6 @@ public class Simple {
         this.client.sendMessage(this.m.chatJid(), contactMessage, this.m);
     }
 
-    /**
-     *
-     * @param url
-     * @param caption
-     * @throws IOException
-     */
     public void SendImage(String url, String caption) throws IOException {
         var media = new URL(url).openStream().readAllBytes();
         var img = ImageMessage.simpleBuilder()
@@ -60,12 +42,6 @@ public class Simple {
         this.client.sendMessage(this.m.chatJid(), img, this.m);
     }
 
-    /**
-     *
-     * @param url
-     * @param caption
-     * @throws IOException
-     */
     public void SendVideo(String url, String caption) throws IOException {
         var media = new URL(url).openStream().readAllBytes();
         var vid = VideoMessage.simpleVideoBuilder()
@@ -75,10 +51,6 @@ public class Simple {
         this.client.sendMessage(this.m.chatJid(), vid, this.m);
     }
 
-    /**
-     *
-     * @param buffer
-     */
     public void SendSticker(byte[] buffer) {
         var stc = StickerMessage.simpleBuilder()
                 .media(buffer)
@@ -87,13 +59,6 @@ public class Simple {
         this.client.sendMessage(this.m.chatJid(), stc, this.m);
     }
 
-    /**
-     *
-     * @param url
-     * @param fileName
-     * @param title
-     * @throws IOException
-     */
     public void SendDocument(String url, String fileName, String title) throws IOException {
         var media = new URL(url).openStream().readAllBytes();
         var doc = DocumentMessage.simpleBuilder()
@@ -104,12 +69,7 @@ public class Simple {
         this.client.sendMessage(this.m.chatJid(), doc, this.m);
     }
 
-    /**
-     *
-     * @param name
-     * @param businessName
-     * @param number
-     */
+
     public void SendContactBusiness(String name, String businessName, String number) {
         var vcard = ContactCard.builder()
                 .name(name)
@@ -123,20 +83,6 @@ public class Simple {
         this.client.sendMessage(this.m.chatJid(), contactMessage, this.m);
     }
 
-    /**
-     *
-     * @param body
-     * @param footer
-     * @param buttons
-     */
-    public void SendButtonText(String body, String footer, List<Button> buttons) {
-        var btn = ButtonsMessage.withoutHeaderBuilder()
-                .body(body)
-                .footer(footer)
-                .buttons(buttons)
-                .build();
-        this.client.sendMessage(this.m.chatJid(), btn, this.m);
-    }
 
     /**
      *

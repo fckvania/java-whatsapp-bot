@@ -1,9 +1,7 @@
 package mybot.maple.message;
 
-import com.vdurmont.emoji.EmojiParser;
 import it.auties.whatsapp.api.Whatsapp;
 import it.auties.whatsapp.controller.Store;
-import it.auties.whatsapp.model.button.Button;
 import it.auties.whatsapp.model.contact.ContactJid;
 import it.auties.whatsapp.model.info.MessageInfo;
 import it.auties.whatsapp.model.message.button.ButtonsResponseMessage;
@@ -19,7 +17,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.List;
 
 public class Message {
     public static void onNewMessage(Whatsapp api, MessageInfo msg) {
@@ -46,96 +43,58 @@ public class Message {
             String command = args[0].toLowerCase();
             String text = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 
-            Boolean isOwner = ownerNumber.equals(msg.sender().get().jid().toString());
-            Boolean isGroup = msg.chatJid().hasServer(ContactJid.Server.GROUP);
-            Boolean isAdmin = simple.CheckGroupAdmin(from, sender);
-            Boolean isMeAdmin = simple.CheckGroupAdmin(from, store.userCompanionJid().toUserJid());
+            boolean isOwner = ownerNumber.equals(msg.sender().get().jid().toString());
 
             switch (command) {
-                /**
-                 * Main Menu
-                 */
-                case "!menu": {
+                case "!menu" -> {
                     String menu = """
                             *Main Menu*
                             > !about
                             > !join
                             > !menu
                             > !owner
-
-                            *Group Menu*
-                            > !link
-                             
-                            *Owner Menu*
-                            > $        
-                                                   """;
-                    Button btn = Button.of("!owner", "Creator");
-                    Button btn2 = Button.of("!about", "Info");
-                    simple.SendButtonText(menu, "This Bot fully written in Java", List.of(btn, btn2));
-                    break;
+                            > !source""";
+                    simple.Reply(menu);
                 }
-                case "!owner": {
+                case "!owner" -> {
                     simple.SendContactBusiness("Violetavior", "Violetavior", "6281236031617");
-                    break;
                 }
-                case "!source": {
+                case "!source" -> {
                     simple.Reply("https://github.com/fckvania/java-whatsapp-bot");
-                    break;
                 }
-                case "!about": {
+                case "!about" -> {
                     MavenXpp3Reader reader = new MavenXpp3Reader();
                     Model model = reader.read(new FileReader("pom.xml"));
                     String versi = model.getVersion();
                     String about = """
-                            This Bot is fully written in Java and created with :heart: by Vania
+                            This Bot is fully written in Java and created with ❤ by Vania
 
                             • Version : %s
                             • JVM version : %s
                             • Library : WhatsappWeb4j
                             • Thanks to : github.com/Auties00                                                                
                             """.formatted(versi, System.getProperty("java.version"));
-                    Button btn = Button.of("!source", "Source");
-                    simple.SendButtonText(EmojiParser.parseToUnicode(about), "", List.of(btn));
-                    break;
+                    simple.Reply(about);
                 }
-                case "!join": {
-                    if (text.equals("")) {
+                case "!join" -> {
+                    if (text.isEmpty()) {
                         simple.Reply("Query not supported");
                         return;
                     }
 
                     var resp = api.acceptGroupInvite(text.replace("https://chat.whatsapp.com/", ""));
-                    if(resp.join().isEmpty()) {
+                    if (resp.join().isEmpty()) {
                         simple.Reply("Failed To Join Group");
                         return;
                     }
                     simple.Reply("Succes Join Group");
-                    break;
                 }
-                /**
-                 * Group Menu
-                 */
-                case "!link": {
-                    if(!isGroup) {
-                        simple.Reply("Command Tidak Support Di Luar Group!.");
-                        return;
-                    }
-                    if (!isMeAdmin) {
-                        simple.Reply("Nalle Not Admin :(");
-                        return;
-                    }
-                    String subject = msg.chat().name();
-                    String anu = api.queryGroupInviteCode(from)
-                            .join();
-                    String res = "Link For Group *%s* :\n\nhttps://chat.whatsapp.com/%s"
-                            .formatted(subject, anu);
-                    simple.Reply(res);
-                    break;
-                }
+
+
                 /**
                  * Owner Menu
                  */
-                case "$": {
+                case "$" -> {
                     if (!isOwner) return;
                     ProcessBuilder processBuilder = new ProcessBuilder();
                     processBuilder.command("bash", "-c", text);
@@ -156,7 +115,6 @@ public class Message {
                             simple.Reply("Succes");
                         }
                     }
-                    break;
                 }
             }
         } catch (IOException e) {
