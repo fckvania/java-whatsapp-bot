@@ -71,7 +71,7 @@ public class Message {
 
                             • Version : %s
                             • JVM version : %s
-                            • Library : WhatsappWeb4j
+                            • Library : Cobalt
                             • Thanks to : github.com/Auties00                                                                
                             """.formatted(versi, System.getProperty("java.version"));
                     simple.Reply(about);
